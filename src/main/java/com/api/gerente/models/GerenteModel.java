@@ -2,12 +2,14 @@ package com.api.gerente.models;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
 @Table(name = "GERENTE")
 public class GerenteModel implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
