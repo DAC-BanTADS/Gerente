@@ -12,6 +12,9 @@ services:
       MYSQL_USER: owner
       MYSQL_PASSWORD: owner
       MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - gerente-network
     ports:
@@ -34,6 +37,7 @@ services:
       - mysql_gerente
 
 volumes:
+  db:
   static_data:
 
 networks:
