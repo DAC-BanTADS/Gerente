@@ -21,10 +21,13 @@ public class GerenteModel implements Serializable {
     private String nome;
     @Column(nullable = false)
     private String email;
+    @Column()
+    private int numeroClientes;
+    @Column(nullable = false)
+    private String telefone;
+    @Column(nullable = false)
+    private String senha;
 
-    /*
-     * GETTERS E SETTERS
-     * */
 
     public UUID getId() {
         return id;
@@ -56,5 +59,29 @@ public class GerenteModel implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getNumeroClientes() {
+        return numeroClientes;
+    }
+
+    public void setNumeroClientes(int numeroClientes) {
+        this.numeroClientes = numeroClientes;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }

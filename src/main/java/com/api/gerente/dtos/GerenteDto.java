@@ -11,10 +11,11 @@ public class GerenteDto {
     private String nome;
     @NotBlank
     private String email;
-
-    /*
-     * GETTERS E SETTERS
-     * */
+    private int numeroClientes;
+    @NotBlank
+    private String telefone;
+    @NotBlank
+    private String senha;
 
     public String getCpf() {
         return cpf;
@@ -38,5 +39,29 @@ public class GerenteDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getNumeroClientes() {
+        return numeroClientes;
+    }
+
+    public void setNumeroClientes(int numeroClientes) {
+        this.numeroClientes = numeroClientes;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }
