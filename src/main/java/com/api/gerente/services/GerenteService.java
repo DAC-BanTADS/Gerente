@@ -31,6 +31,10 @@ public class GerenteService {
         return gerenteRepository.findById(id);
     }
 
+    public Optional<GerenteModel> findByEmail(String email) {
+        return gerenteRepository.findByEmail(email);
+    }
+
     @Transactional
     public void delete(GerenteModel gerenteModel) {
         gerenteRepository.delete(gerenteModel);
@@ -42,5 +46,9 @@ public class GerenteService {
 
     public boolean existsByEmail(String email) {
         return gerenteRepository.existsByEmail(email);
+    }
+
+    public boolean existsByTelefone(String telefone) {
+        return gerenteRepository.existsByTelefone(telefone);
     }
 }

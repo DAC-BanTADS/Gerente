@@ -1,6 +1,5 @@
 package com.api.gerente.amqp;
 
-import com.api.gerente.controllers.GerenteController;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,17 +17,18 @@ public class GerenteReceiver {
     @Autowired
     private GerenteProducer gerenteProducer;
     @Autowired
-    private GerenteController gerenteController;
+    private GerenteHelper gerenteHelper;
 
     @RabbitHandler
     public GerenteTransfer receive(@Payload GerenteTransfer gerenteTransfer) {
         if (gerenteTransfer.getAction().equals("save-gerente")) {
             if (Objects.isNull(gerenteTransfer.getGerenteDto())) {
                 gerenteTransfer.setAction("failed-gerente");
+                gerenteTransfer.setMessage(("Nenhum dado de Gerente foi passado."));
                 return gerenteTransfer;
             }
 
-            ResponseEntity<Object> response = gerenteController.saveGerente(gerenteTransfer.getGerenteDto());
+            ResponseEntity<Object> response = gerenteHelper.saveGerente(gerenteTransfer.getGerenteDto());
 
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
                 gerenteTransfer.setAction("success-gerente");
@@ -36,9 +36,12 @@ public class GerenteReceiver {
             }
 
             gerenteTransfer.setAction("failed-gerente");
+            gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()).toString());
             return gerenteTransfer;
         }
 
-        return null;
+        gerenteTransfer.setAction("failed-gerente");
+        gerenteTransfer.setMessage("Ação informada não existe.");
+        return gerenteTransfer;
     }
 }

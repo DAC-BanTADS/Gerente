@@ -15,15 +15,15 @@ public class GerenteModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(nullable = false, length = 11)
+    @Column(nullable = false, length = 11, unique = true)
     private String cpf;
     @Column(nullable = false)
     private String nome;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     @Column()
     private int numeroClientes;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String telefone;
     @Column(nullable = false)
     private String senha;
