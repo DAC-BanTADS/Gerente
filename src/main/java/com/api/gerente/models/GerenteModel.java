@@ -25,8 +25,6 @@ public class GerenteModel implements Serializable {
     private int numeroClientes;
     @Column(nullable = false, unique = true)
     private String telefone;
-    @Column(nullable = false)
-    private String senha;
 
 
     public UUID getId() {
@@ -75,13 +73,5 @@ public class GerenteModel implements Serializable {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 }
