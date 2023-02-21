@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Payload;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @RabbitListener(queues = "gerente")
 public class GerenteReceiver {
@@ -22,15 +23,74 @@ public class GerenteReceiver {
     @RabbitHandler
     public GerenteTransfer receive(@Payload GerenteTransfer gerenteTransfer) {
         if (gerenteTransfer.getAction().equals("save-gerente")) {
-            if (Objects.isNull(gerenteTransfer.getGerenteDto())) {
+            if (Objects.isNull(gerenteTransfer.getGerenteDto().getCpf())) {
                 gerenteTransfer.setAction("failed-gerente");
                 gerenteTransfer.setMessage(("Nenhum dado de Gerente foi passado."));
                 return gerenteTransfer;
             }
 
-            ResponseEntity<Object> response = gerenteHelper.saveGerente(gerenteTransfer.getGerenteDto());
+            ResponseEntity<String> response = gerenteHelper.saveGerente(gerenteTransfer.getGerenteDto());
 
             if (response.getStatusCode().equals(HttpStatus.CREATED)) {
+                gerenteTransfer.setAction("success-gerente");
+                gerenteTransfer.setMessage(response.getBody());
+                return gerenteTransfer;
+            }
+
+            gerenteTransfer.setAction("failed-gerente");
+            gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()));
+            return gerenteTransfer;
+        }
+
+        if (gerenteTransfer.getAction().equals("min-gerente")) {
+            ResponseEntity<String> response = gerenteHelper.getGerenteByNumeroClientesMin();
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                gerenteTransfer.setAction("success-gerente");
+                gerenteTransfer.setMessage(response.getBody());
+                return gerenteTransfer;
+            }
+
+            gerenteTransfer.setAction("failed-gerente");
+            gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()));
+            return gerenteTransfer;
+        }
+
+        if (gerenteTransfer.getAction().equals("max-gerente")) {
+            ResponseEntity<String> response = gerenteHelper.getGerenteByNumeroClientesMax();
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                gerenteTransfer.setAction("success-gerente");
+                gerenteTransfer.setMessage(response.getBody());
+                return gerenteTransfer;
+            }
+
+            gerenteTransfer.setAction("failed-gerente");
+            gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()));
+            return gerenteTransfer;
+        }
+
+        if (gerenteTransfer.getAction().equals("add-one-cliente")) {
+            UUID idUpdate = UUID.fromString(gerenteTransfer.getMessage());
+
+            ResponseEntity<Object> response = gerenteHelper.addOneClienteToGerente(idUpdate);
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                gerenteTransfer.setAction("success-gerente");
+                return gerenteTransfer;
+            }
+
+            gerenteTransfer.setAction("failed-gerente");
+            gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()).toString());
+            return gerenteTransfer;
+        }
+
+        if (gerenteTransfer.getAction().equals("sub-one-cliente")) {
+            UUID idUpdate = UUID.fromString(gerenteTransfer.getMessage());
+
+            ResponseEntity<Object> response = gerenteHelper.subOneClienteToGerente(idUpdate);
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
                 gerenteTransfer.setAction("success-gerente");
                 return gerenteTransfer;
             }

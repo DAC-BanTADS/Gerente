@@ -11,6 +11,10 @@ public class GerenteTransfer implements Serializable {
     public GerenteTransfer() {
     }
 
+    public GerenteTransfer(String action) {
+        this.action = action;
+    }
+
     public GerenteTransfer(GerenteDto gerenteDto, String action) {
         this.gerenteDto = gerenteDto;
         this.action = action;

@@ -35,6 +35,10 @@ public class GerenteService {
         return gerenteRepository.findByEmail(email);
     }
 
+    public Optional<GerenteModel> findByNumeroClientesMin() { return gerenteRepository.findByNumeroClientesMin(); }
+
+    public Optional<GerenteModel> findByNumeroClientesMax() { return gerenteRepository.findByNumeroClientesMax(); }
+
     @Transactional
     public void delete(GerenteModel gerenteModel) {
         gerenteRepository.delete(gerenteModel);

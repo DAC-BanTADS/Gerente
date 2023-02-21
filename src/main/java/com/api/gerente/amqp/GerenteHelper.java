@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +21,7 @@ public class GerenteHelper {
         this.gerenteService = gerenteService;
     }
 
-    public ResponseEntity<Object> saveGerente(@Valid GerenteDto gerenteDto){
+    public ResponseEntity<String> saveGerente(@Valid GerenteDto gerenteDto){
         if(gerenteService.existsByCpf(gerenteDto.getCpf())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflito: CPF já está sendo utilizado!");
         }
@@ -33,7 +34,7 @@ public class GerenteHelper {
 
         var gerenteModel = new GerenteModel();
         BeanUtils.copyProperties(gerenteDto, gerenteModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(gerenteService.save(gerenteModel));
+        return ResponseEntity.status(HttpStatus.CREATED).body(gerenteService.save(gerenteModel).getId().toString());
     }
 
 
@@ -55,5 +56,47 @@ public class GerenteHelper {
         BeanUtils.copyProperties(gerenteDto, gerenteModel);
         gerenteModel.setId(gerenteModelOptional.get().getId());
         return ResponseEntity.status(HttpStatus.OK).body(gerenteService.save(gerenteModel));
+    }
+
+    public ResponseEntity<Object> addOneClienteToGerente(UUID id){
+        Optional<GerenteModel> gerenteModelOptional = gerenteService.findById(id);
+        if (!gerenteModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
+        }
+
+        gerenteModelOptional.get().setNumeroClientes(
+                gerenteModelOptional.get().getNumeroClientes() + 1
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteService.save(gerenteModelOptional.get()));
+    }
+
+    public ResponseEntity<Object> subOneClienteToGerente(UUID id){
+        Optional<GerenteModel> gerenteModelOptional = gerenteService.findById(id);
+        if (!gerenteModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
+        }
+
+        gerenteModelOptional.get().setNumeroClientes(
+                gerenteModelOptional.get().getNumeroClientes() - 1
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteService.save(gerenteModelOptional.get()));
+    }
+
+    public ResponseEntity<String> getGerenteByNumeroClientesMin(){
+        Optional<GerenteModel> gerenteModelOptional = gerenteService.findByNumeroClientesMin();
+        if (!gerenteModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteModelOptional.get().getId().toString());
+    }
+
+    public ResponseEntity<String> getGerenteByNumeroClientesMax(){
+        Optional<GerenteModel> gerenteModelOptional = gerenteService.findByNumeroClientesMax();
+        if (!gerenteModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteModelOptional.get().getId().toString());
     }
 }
