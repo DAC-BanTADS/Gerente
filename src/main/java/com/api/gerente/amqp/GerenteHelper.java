@@ -38,16 +38,20 @@ public class GerenteHelper {
     }
 
 
-    public ResponseEntity<Object> deleteGerente(UUID id){
+    public ResponseEntity<GerenteDto> deleteGerente(UUID id){
         Optional<GerenteModel> gerenteModelOptional = gerenteService.findById(id);
         if (!gerenteModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new GerenteDto());
         }
+
+        GerenteDto gerenteDto = new GerenteDto();
+        BeanUtils.copyProperties(gerenteModelOptional.get(), gerenteDto);
+
         gerenteService.delete(gerenteModelOptional.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Gerente deletado com sucesso.");
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteDto);
     }
 
-    public ResponseEntity<Object> updateGerente(UUID id, @Valid GerenteDto gerenteDto){
+    public ResponseEntity<String> updateGerente(UUID id, @Valid GerenteDto gerenteDto){
         Optional<GerenteModel> gerenteModelOptional = gerenteService.findById(id);
         if (!gerenteModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
@@ -55,7 +59,9 @@ public class GerenteHelper {
         var gerenteModel = new GerenteModel();
         BeanUtils.copyProperties(gerenteDto, gerenteModel);
         gerenteModel.setId(gerenteModelOptional.get().getId());
-        return ResponseEntity.status(HttpStatus.OK).body(gerenteService.save(gerenteModel));
+
+        gerenteService.save(gerenteModel);
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteModelOptional.get().getEmail());
     }
 
     public ResponseEntity<Object> addOneClienteToGerente(UUID id){
@@ -98,5 +104,17 @@ public class GerenteHelper {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(gerenteModelOptional.get().getId().toString());
+    }
+
+    public ResponseEntity<GerenteDto> getGerenteById(UUID id) {
+        Optional<GerenteModel> gerenteModelOptional = gerenteService.findById(id);
+        if (!gerenteModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new GerenteDto());
+        }
+
+        var gerenteDto = new GerenteDto();
+        BeanUtils.copyProperties(gerenteModelOptional.get(), gerenteDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteDto);
     }
 }
