@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,6 +26,10 @@ public class GerenteService {
 
     public Page<GerenteModel> findAll(Pageable pageable) {
         return gerenteRepository.findAll(pageable);
+    }
+
+    public List<GerenteModel> findAllSaga() {
+        return gerenteRepository.findAll();
     }
 
     public Optional<GerenteModel> findById(UUID id) {

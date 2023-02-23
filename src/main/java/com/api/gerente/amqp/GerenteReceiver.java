@@ -125,6 +125,24 @@ public class GerenteReceiver {
             return gerenteTransfer;
         }
 
+        if (gerenteTransfer.getAction().equals("add-cliente")) {
+            String[] substrings = gerenteTransfer.getMessage().split("\\+");
+
+            UUID idGerenteAntigo = UUID.fromString(substrings[0]);
+            UUID idGerenteAtual = UUID.fromString(substrings[1]);
+
+            ResponseEntity<Object> response = gerenteHelper.addClienteToGerente(idGerenteAntigo, idGerenteAtual);
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                gerenteTransfer.setAction("success-gerente");
+                return gerenteTransfer;
+            }
+
+            gerenteTransfer.setAction("failed-gerente");
+            gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()).toString());
+            return gerenteTransfer;
+        }
+
         if (gerenteTransfer.getAction().equals("sub-one-cliente")) {
             UUID idUpdate = UUID.fromString(gerenteTransfer.getMessage());
 
@@ -141,9 +159,9 @@ public class GerenteReceiver {
         }
 
         if (gerenteTransfer.getAction().equals("get-gerente")) {
-            UUID idUpdate = UUID.fromString(gerenteTransfer.getMessage());
+            UUID id = UUID.fromString(gerenteTransfer.getMessage());
 
-            ResponseEntity<GerenteDto> response = gerenteHelper.getGerenteById(idUpdate);
+            ResponseEntity<GerenteDto> response = gerenteHelper.getGerenteById(id);
 
             if (response.getStatusCode().equals(HttpStatus.OK)) {
                 gerenteTransfer.setAction("success-gerente");
@@ -153,6 +171,20 @@ public class GerenteReceiver {
 
             gerenteTransfer.setAction("failed-gerente");
             gerenteTransfer.setMessage("Gerente não encontrado.");
+            return gerenteTransfer;
+        }
+
+        if (gerenteTransfer.getAction().equals("get-number-gerente")) {
+            ResponseEntity<Object> response = gerenteHelper.getGerenteNumber();
+
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                gerenteTransfer.setAction("success-gerente");
+                gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()).toString());
+                return gerenteTransfer;
+            }
+
+            gerenteTransfer.setAction("failed-gerente");
+            gerenteTransfer.setMessage(Objects.requireNonNull(response.getBody()).toString());
             return gerenteTransfer;
         }
 

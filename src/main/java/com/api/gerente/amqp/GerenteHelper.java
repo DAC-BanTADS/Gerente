@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -77,6 +78,21 @@ public class GerenteHelper {
         return ResponseEntity.status(HttpStatus.OK).body(gerenteService.save(gerenteModelOptional.get()));
     }
 
+    public ResponseEntity<Object> addClienteToGerente(UUID idGerenteAntigo, UUID idGerenteAtual){
+        Optional<GerenteModel> gerenteModelAtualOptional = gerenteService.findById(idGerenteAtual);
+        Optional<GerenteModel> gerenteModelAntigoOptional = gerenteService.findById(idGerenteAntigo);
+
+        if (gerenteModelAtualOptional.isEmpty() || gerenteModelAntigoOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gerente não encontrado.");
+        }
+
+        gerenteModelAtualOptional.get().setNumeroClientes(
+                gerenteModelAtualOptional.get().getNumeroClientes() + gerenteModelAntigoOptional.get().getNumeroClientes()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(gerenteService.save(gerenteModelAtualOptional.get()));
+    }
+
     public ResponseEntity<Object> subOneClienteToGerente(UUID id){
         Optional<GerenteModel> gerenteModelOptional = gerenteService.findById(id);
         if (!gerenteModelOptional.isPresent()) {
@@ -116,5 +132,19 @@ public class GerenteHelper {
         BeanUtils.copyProperties(gerenteModelOptional.get(), gerenteDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(gerenteDto);
+    }
+
+    public ResponseEntity<Object> getGerenteNumber() {
+        List<GerenteModel> gerenteModelList = gerenteService.findAllSaga();
+        if (gerenteModelList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há gerentes");
+        }
+
+        int qtd = 0;
+        for (GerenteModel gerenteModel : gerenteModelList) {
+            qtd++;
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(qtd);
     }
 }
